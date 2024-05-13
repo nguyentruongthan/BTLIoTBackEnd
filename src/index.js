@@ -2,9 +2,9 @@ import express from "express";
 import bodyParser from "body-parser";
 
 import cors from 'cors';
-// import mqttClient from './controllers/mqttClientController';
+import mqttClient from './controller/mqttController.js';
 import mongoose from 'mongoose';
-import routerTask from './router/task.js';
+import schedulerRouter from './router/schedulerRouter.js';
 
 let app = express();
 
@@ -12,10 +12,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use("/task", routerTask)
+app.use("/scheduler", schedulerRouter)
 
 mongoose.connect(
-  'mongodb+srv://thannguyenxlscpy:iotdatabase@cluster0.ozvz1fi.mongodb.net/Node-API?retryWrites=true&w=majority&appName=Cluster0')
+  `mongodb+srv://thannguyenxlscpy:${process.env.DATABASE_PASSWORD}@cluster0.ozvz1fi.mongodb.net/Node-API?retryWrites=true&w=majority&appName=Cluster0`)
   .then(() => {
     console.log('Connected to mongodb');
     let port = 8000;

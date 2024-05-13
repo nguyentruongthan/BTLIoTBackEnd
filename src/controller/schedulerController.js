@@ -1,9 +1,10 @@
 import model from '../model/model.js';
+import schedulerService from '../services/schedulerService.js';
 
 const getAllTask = async (req, res) => {
   try {
-    const tasks = await model.Task.find();
-    res.status(200).json(tasks);
+    const scheduler = await schedulerService.getScheduler();
+    res.status(200).json(scheduler);
   } catch (err) {
     res.status(500).json(err);
   }
