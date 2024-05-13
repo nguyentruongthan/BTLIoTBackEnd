@@ -40,8 +40,7 @@ class MQTTClient {
       switch (header) {
         case 0: 
           const scheduler = await schedulerService.getScheduler();
-          console.log(scheduler);
-          this.publish(JSON.stringify(scheduler));
+          this.publish(`1:${JSON.stringify(scheduler)}`);
       }
       
     });
