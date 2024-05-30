@@ -1,23 +1,7 @@
 import mongoose from 'mongoose';
-const taskSchema = new mongoose.Schema({
+const taskLogSchema = new mongoose.Schema({
   taskID: {
     type: mongoose.Schema.Types.ObjectId,
-    // required: true
-  },
-  gardenName: {
-    type: String,
-    required: true
-  },
-  startTime: {
-    type: String,
-    required: true
-  },
-  stopTime: {
-    type: String,
-    required: true
-  },
-  cycle: {
-    type: String,
     required: true
   },
   flow1: {
@@ -36,19 +20,19 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  isActive: {
-    type: String,
+  pumpOut: {
+    type: String, 
     required: true
   },
-  schedulerName: {
-    type: String,
+  status: {
+    type: String, //waiting = 0, processing = 1, complete = 2
     required: true
   },
 });
 
 
-let Task = mongoose.model('Task', taskSchema);
+let TaskLog = mongoose.model('TaskLog', taskLogSchema);
 
 export default {
-  Task: Task
+  TaskLog: TaskLog
 }

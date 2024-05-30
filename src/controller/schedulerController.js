@@ -1,5 +1,6 @@
-import model from '../model/model.js';
+import taskModel from '../model/taskModel.js';
 import schedulerService from '../services/schedulerService.js';
+import taskLogService from '../services/taskLogService.js';
 
 const getAllTask = async (req, res) => {
   try {
@@ -11,35 +12,48 @@ const getAllTask = async (req, res) => {
 }
 const postTask = async (req, res) => {
   try {
-    //send req to mqtt
-    //vô subscribe
-    const newTask = new model.Task(req.body);
-    const savedTask = await newTask.save();
+    //check start time less than stop time
+    if (parseInt(req.body.startTime) >= parseInt(req.body.stopTime)) {
+      return res.status(400).json('Start time must be less than stop time');
+    } 
+
+    //check pumpIn
+    if (req.body['pumpIn'] == '') return res.status(400).json('PumpIn must be filled');
+
+    //set isActive to 1
+    req.body['isActive'] = '1';
+    //call service add task
+    const savedTask = await schedulerService.addTask(req);
+    //call service add task log
+    await taskLogService.addTaskLog(savedTask._id);
     res.status(200).json(savedTask);
   } catch (err) {
     res.status(500).json(err);
   }
 }
-const getTaskById = async (req, res) => {
+const getTaskByID = async (req, res) => {
   try {
-    const task = await model.Task.findById(req.params.id);
+    const task = await schedulerService.getTaskByID(req.params.taskID);
     res.status(200).json(task);
   } catch (err) {
     res.status(500).json(err);
   }
 }
-const updateTaskById = async (req, res) => {
+const updateTaskByID = async (req, res) => {
   try {
-    const task = await model.Task.findById(req.params.id);
-    await task.updateOne({ $set: req.body });
-    res.status(200).json('The task has been updated');
+    const updatedTask = await schedulerService.updateTaskByID(req.params.taskID, req.body);
+    res.status(200).json(updatedTask);
   } catch (err) {
     res.status(500).json(err);
   }
 }
-const deleteTaskById = async (req, res) => {
+const deleteTaskByID = async (req, res) => {
   try {
-    await model.Task.deleteOne({ _id: req.params.id });
+    //call service delete task 
+    await schedulerService.deleteTaskByID(req.params.taskID);
+    //call service delete task log
+    await taskLogService.deleteTaskLogByTaskID(req.params.taskID);
+    res.status(200).json('Task has been deleted');
   } catch (err) {
     res.status(500).json(err);
   }
@@ -48,7 +62,7 @@ const deleteTaskById = async (req, res) => {
 export default {
   getAllTask: getAllTask,
   postTask: postTask,
-  getTaskById: getTaskById,
-  updateTaskById: updateTaskById,
-  deleteTaskById: deleteTaskById,
+  getTaskByID: getTaskByID,
+  updateTaskByID: updateTaskByID,
+  deleteTaskByID: deleteTaskByID,
 }

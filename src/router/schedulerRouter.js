@@ -7,9 +7,9 @@ router.get('/', schedulerController.getAllTask);
 // create a new Task
 router.post('/', schedulerController.postTask);
 //get a task by id
-router.get('/:id', schedulerController.getTaskById);
+router.get('/:taskID', schedulerController.getTaskByID);
 //update a task by id
-router.put('/:id', schedulerController.updateTaskById);
+router.put('/:taskID', schedulerController.updateTaskByID);
 //delete a task by id
-router.delete('/:id', schedulerController.deleteTaskById);
+router.delete('/:taskID', schedulerController.deleteTaskByID);
 export default router;
