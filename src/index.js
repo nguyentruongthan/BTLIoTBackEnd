@@ -6,7 +6,7 @@ import mqttClient from './controller/mqttController.js';
 import mongoose from 'mongoose';
 import schedulerRouter from './router/schedulerRouter.js';
 import taskLogRouter from './router/taskLogRouter.js';
-
+import sensorLogRouter from './router/sensorLogRouter.js';
 let app = express();
 
 app.use(cors());
@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use("/scheduler", schedulerRouter)
 app.use("/taskLog", taskLogRouter)
+app.use("/sensorLog", sensorLogRouter)
 
 mongoose.connect(
   `mongodb+srv://thannguyenxlscpy:${process.env.DATABASE_PASSWORD}@cluster0.ozvz1fi.mongodb.net/Node-API?retryWrites=true&w=majority&appName=Cluster0`)
