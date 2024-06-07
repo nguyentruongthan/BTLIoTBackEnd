@@ -1,5 +1,7 @@
 import sensorLogService from "../services/sensorLogService.js";
 
+sensorLogService.initCatchSensorLog();
+
 const addSensorLog = async (req, res) => {
   //call service add sensor log
   try {
@@ -22,7 +24,17 @@ const getSensorLogBySensorID = async (req, res) => {
   }
 }
 
+const getLatestSensorLog = async (req, res) => {
+  try {
+    const sensorLog = await sensorLogService.getLatestSensorLog();
+    return res.status(200).json(sensorLog);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+}
+
 export default {
   addSensorLog: addSensorLog,
-  getSensorLogBySensorID: getSensorLogBySensorID
+  getSensorLogBySensorID: getSensorLogBySensorID,
+  getLatestSensorLog: getLatestSensorLog,
 }

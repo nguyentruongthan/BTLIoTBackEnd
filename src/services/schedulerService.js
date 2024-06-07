@@ -28,7 +28,7 @@ const updateTaskByID = async (taskID, task) => {
 
 export default {
   getScheduler: getScheduler,
-  deleteTaskById: deleteTaskByID,
+  deleteTaskByID: deleteTaskByID,
   addTask: addTask,
   getTaskByID: getTaskByID,
   updateTaskByID: updateTaskByID

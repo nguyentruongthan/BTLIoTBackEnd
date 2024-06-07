@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
 const taskSchema = new mongoose.Schema({
-  taskID: {
-    type: mongoose.Schema.Types.ObjectId,
-    // required: true
-  },
   gardenName: {
     type: String,
     required: true

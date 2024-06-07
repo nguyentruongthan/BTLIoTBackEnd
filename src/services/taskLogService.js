@@ -1,5 +1,5 @@
 import taskLogModel from "../model/taskLogModel.js";
-
+import constant from "../constant.js";
 const addTaskLog = async (taskID) => {
   const existingTaskLog = await taskLogModel.TaskLog.findOne(
     { taskID: taskID });
@@ -14,7 +14,7 @@ const addTaskLog = async (taskID) => {
     flow3: "0",
     pumpIn: "0",
     pumpOut: "0",
-    status: "0",//waiting
+    status: `${constant.TASK_WAITING_STATUS}`,//waiting
   };
 
   const newTaskLog = new taskLogModel.TaskLog(taskLog);

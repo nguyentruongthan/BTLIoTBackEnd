@@ -7,5 +7,6 @@ let router = express.Router();
 router.get('/:sensorID/:date', sensorLogController.getSensorLogBySensorID);
 // create a new Sensor log
 router.post('/', sensorLogController.addSensorLog);
-
+//get latest sensor log by sensor id
+router.get('/', sensorLogController.getLatestSensorLog);
 export default router;

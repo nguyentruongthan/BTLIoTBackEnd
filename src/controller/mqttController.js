@@ -1,7 +1,9 @@
 import mqtt from 'mqtt';
 import schedulerService from '../services/schedulerService.js';
+import constant from '../constant.js';
 import 'dotenv/config';
-
+import eventService from '../services/eventService.js';
+import sensorLogService from '../services/sensorLogService.js';
 class MQTTClient {
   publish(message) {
     if (!this.client || !this.client.connected) {
@@ -38,11 +40,23 @@ class MQTTClient {
 
       const header = parseInt(splitMessage[0]);
       switch (header) {
-        case 0: 
+        case constant.HEADER_GETWAY_REQUEST_TASK: // receive request for get all scheduler from iot gatweway
           const scheduler = await schedulerService.getScheduler();
           scheduler.forEach((task) => {
             this.publish(`1:${JSON.stringify(task)}`);
           });
+          break;
+        case constant.HEADER_GATEWAY_SEND_ACK:
+          console.log('ACK from gateway: ', message);
+          //add event to eventService
+          eventService.mqttEvent.emit(message, "");
+          break;
+        case constant.HEADER_GATEWAY_SEND_SENSOR_VALUE:
+          const tempValue = splitMessage[1];
+          const humiAirValue = splitMessage[2];
+          await sensorLogService.addSensorLog(
+            { tempValue: tempValue, humiAirValue: humiAirValue });
+          break;
       }
       
     });
