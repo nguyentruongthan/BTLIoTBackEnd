@@ -1,5 +1,17 @@
 import taskLogModel from "../model/taskLogModel.js";
 import constant from "../constant.js";
+
+const taskLogsGlobal = {};
+
+const resetStatusTaskLogs = async () => {
+  for (let key in taskLogsGlobal) {
+    if (!taskLogsGlobal[key]) {
+      console.log(`taskLogsGlobal[${key}] is null`);
+      continue;
+    }
+    taskLogsGlobal[key].status = constant.TASK_WAITING_STATUS;
+  }
+}
 const addTaskLog = async (taskID) => {
   const existingTaskLog = await taskLogModel.TaskLog.findOne(
     { taskID: taskID });
@@ -19,27 +31,52 @@ const addTaskLog = async (taskID) => {
 
   const newTaskLog = new taskLogModel.TaskLog(taskLog);
   const savedTaskLog = await newTaskLog.save();
+  //update cache 
+  taskLogsGlobal[taskID] = taskLog;
   return savedTaskLog;
 }
 const getAllTaskLog = async () => {
-  const taskLog = await taskLogModel.TaskLog.find();
-  return taskLog;
+  const taskLogs = await taskLogModel.TaskLog.find();
+  //update taskLogsGlobal
+  for (let taskLog of taskLogs) {
+    taskLogsGlobal[taskLog.taskID] = taskLog;
+  }
+  return taskLogs;
 }
 const getTaskLogByTaskID = async (taskID) => {
-  const taskLog = await taskLogModel.TaskLog.find({ taskID: taskID });
-  return taskLog[0];
+  if (taskLogsGlobal[taskID]) {
+    return taskLogsGlobal[taskID];
+  } else {
+    const taskLog = await taskLogModel.TaskLog.find({ taskID: taskID });
+    taskLogsGlobal[taskID] = taskLog[0];
+    return taskLog[0];
+  }
 }
 const deleteTaskLogByTaskID = async (taskID) => {
-  const taskLog = await taskLogModel.TaskLog.deleteOne({
+  if (taskLogsGlobal[taskID]) {
+    //remove taskLog from taskLogsGlobal
+    delete taskLogsGlobal[taskID];
+  }
+  await taskLogModel.TaskLog.deleteOne({
     taskID: taskID
   });
 }
-const updateTaskLog = async (taskID, taskLog) => {
+const updateTaskLog = async (taskID, key, value) => {
+  const taskLog = await taskLogModel.TaskLog.findOne({ taskID: taskID });
+  if(!taskLog) {
+    return null;
+  }
+  resetStatusTaskLogs();
+  taskLog[key] = (parseFloat(value) + parseFloat(taskLog[key])).toString();
+  taskLog['status'] = constant.TASK_RUNNING_STATUS;
+
   const updatedTaskLog = await taskLogModel.TaskLog.findOneAndUpdate(
     { taskID: taskID },
     taskLog,
     { new: true }
   );
+  //update taskLog in taskLogsGlobal
+  taskLogsGlobal[taskID] = updatedTaskLog;
   return updatedTaskLog;
 }
 

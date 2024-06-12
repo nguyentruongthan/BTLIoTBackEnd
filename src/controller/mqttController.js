@@ -4,6 +4,7 @@ import constant from '../constant.js';
 import 'dotenv/config';
 import eventService from '../services/eventService.js';
 import sensorLogService from '../services/sensorLogService.js';
+import taskLogService from '../services/taskLogService.js';
 class MQTTClient {
   publish(message) {
     if (!this.client || !this.client.connected) {
@@ -15,6 +16,7 @@ class MQTTClient {
 
   constructor(brokerUrl) {
     console.log('init MQTT');
+    console.log(process.env.MQTT_PASSWORD);
     this.client = mqtt.connect(brokerUrl, {
       username: process.env.MQTT_USERNAME,
       password: process.env.MQTT_PASSWORD,
@@ -57,6 +59,14 @@ class MQTTClient {
           await sensorLogService.addSensorLog(
             { tempValue: tempValue, humiAirValue: humiAirValue });
           break;
+        case constant.HEADER_GATEWAY_SEND_TASK_STATUS:
+          const taskID = splitMessage[1];
+          const key = splitMessage[2];
+          const value = splitMessage[3];
+          console.log(taskID);
+          console.log(key);
+          console.log(value);
+          await taskLogService.updateTaskLog(taskID, key, value);
       }
       
     });

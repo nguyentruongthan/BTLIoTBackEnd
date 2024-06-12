@@ -32,7 +32,7 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  taskName: {
+  schedulerName: {
     type: String,
     required: true
   },
