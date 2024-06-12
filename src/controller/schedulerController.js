@@ -72,6 +72,7 @@ const getTaskByID = async (req, res) => {
 const updateTaskByID = async (req, res) => {
   try {
     const taskID = req.params.taskID;
+
     const ack = Date.now().toString();
 
     //check start time less than stop time
@@ -82,6 +83,11 @@ const updateTaskByID = async (req, res) => {
     //check pumpIn
     if (req.body['pumpIn'] == '') return res.status(400).json('PumpIn must be filled');
 
+    //call service to get task
+    const task = await schedulerService.getTaskByID(taskID);
+    if (!req.body['isActive']) {
+      req.body['isActive'] = task.isActive;
+    }
     //add id and ack to body
     req.body['ack'] = ack;
     req.body['_id'] = taskID;

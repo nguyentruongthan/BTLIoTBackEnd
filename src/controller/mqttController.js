@@ -63,9 +63,6 @@ class MQTTClient {
           const taskID = splitMessage[1];
           const key = splitMessage[2];
           const value = splitMessage[3];
-          console.log(taskID);
-          console.log(key);
-          console.log(value);
           await taskLogService.updateTaskLog(taskID, key, value);
       }
       

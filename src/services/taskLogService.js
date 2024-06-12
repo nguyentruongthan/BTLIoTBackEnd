@@ -2,7 +2,6 @@ import taskLogModel from "../model/taskLogModel.js";
 import constant from "../constant.js";
 
 const taskLogsGlobal = {};
-
 const resetStatusTaskLogs = async () => {
   for (let key in taskLogsGlobal) {
     if (!taskLogsGlobal[key]) {
@@ -48,6 +47,9 @@ const getTaskLogByTaskID = async (taskID) => {
     return taskLogsGlobal[taskID];
   } else {
     const taskLog = await taskLogModel.TaskLog.find({ taskID: taskID });
+    if (taskLog.length == 0) {
+      return null;
+    }
     taskLogsGlobal[taskID] = taskLog[0];
     return taskLog[0];
   }
@@ -68,8 +70,7 @@ const updateTaskLog = async (taskID, key, value) => {
   }
   resetStatusTaskLogs();
   taskLog[key] = (parseFloat(value) + parseFloat(taskLog[key])).toString();
-  taskLog['status'] = constant.TASK_RUNNING_STATUS;
-
+  taskLog['status'] = constant.TASK_RUNNING_STATUS;  
   const updatedTaskLog = await taskLogModel.TaskLog.findOneAndUpdate(
     { taskID: taskID },
     taskLog,
